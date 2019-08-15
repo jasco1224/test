@@ -25,8 +25,113 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section data-background-transition='zoom' data-transition='concave' data-background='http://ryanjarvinen.com/presentations/shared/img/broadcast_reveal_dark.png' data-state='blackout'>
+  <h2>Gist-Powered</h2>
+  <h1>Reveal.js</h1>
+  <h2>Slideshow Presentations</h2>
+  <br/>
+  <h1 class='fragment grow'><a style='color:deepskyblue;' href='http://gist-reveal.it'>gist-reveal.it</a></h1>
+</section>
+<section data-background-transition='zoom' data-transition='linear' id='try-it'>
+  <h2>Try it out!</h2>
+  <p>Create your own deck by forking a copy of <a href='https://gist.github.com/ryanj/af84d40e58c5c2a908dd'>this github gist</a>: <br /><a href='https://gist.github.com/ryanj/af84d40e58c5c2a908dd'>https://gist.github.com/ryanj/af84d40e58c5c2a908dd</a></p>
+  <p>Or, by placing any valid Revealjs <a href="#sections">&lt;section&gt;</a> tag content into a fresh gist.</p>
+  <br />
+  <p class='fragment'>When you're ready to view your slides, grab your github gist id and add it to the end of this url:</p>
+<p class='fragment grow'><a href='http://gist-reveal.it/'>http://gist-reveal.it/jasco1224/ec0ec608e41b89a42165063e58f184c5</a></p>
+</section>
+<section data-transition='concave'>
+  <section data-transition='concave'>
+    <h2>Presentations on the Open Web</h2>
+    <p><span class='fragment'>Reveal.js is a framework</spam><br/><span class='fragment'>for easily crafting</span> <br/><span class='fragment'>beautiful presentations</span><br/> <span class='fragment'>in HTML</span> <br/><br/><div class='fragment'><p>You'll need a browser with support for CSS 3D transforms to see it's full capabilities.</p>
+    <aside class="notes">Oh hey, these are some notes. They'll be hidden in your presentation, but you can see them if you open the speaker notes window (hit 's' on your keyboard).</aside>
+  </section>
+  <section>
+    <h2>Tips on using Reveal.js</h2>
+    <p class='fragment'>There is a lot of great information about using Reveal.js in the project's <a href='http://github.com/hakimel/reveal.js'>README page on GitHub</a>.</p>
+    <p class='fragment'>Their <a href='http://lab.hakim.se/reveal-js/'>original slide deck sample conent</a> also contains a lot of great examples.</p>
+  </section>
+  <section id='themes' data-markdown>
+    ## Gist-powered Slideshow Themes
+
+Available CSS themes include [the default reveal.js themes](http://lab.hakim.se/reveal-js/#/themes), but can be easily extended by storing new themes [in a gist](https://gist.github.com/450836bbaebcf4c4ae08b331343a7886):
+
+ * [a theme from the CoreOS team](?theme=450836bbaebcf4c4ae08b331343a7886#/themes)
+ * [a theme for OpenShift fans](?theme=60e54843de11a545897e#/themes)
+ * [the revealjs black theme](?theme=black#/themes)
+ * [the revealjs simple theme](?theme=simple#/themes)
+ * [the revealjs league theme](?theme=default#/themes)
+ * [the revealjs sky theme](?theme=sky#/themes)
+
+Conference organizers can host their own modified gist-reveal templating service (with it's own default theme), to provide a consistent look for all presentations at an event.
+  </section>	  
+</section>
+<section>
+  <section id='kubernetes'>
+    <h3>Host your own slideshow service on Kubernetes</h3>
+    <p>To create a kubernetes deployment and NodePort service, both named gist-reveal, run:</p>
+    <pre><code contenteditable>kubectl run gist-reveal --image=ryanj/gist-reveal \
+--expose --port=8080 --service-overrides='{ "spec": { "type": "NodePort" } }' \
+--env="DEFAULT_GIST=YOUR_DEFAULT_GIST_ID" \
+--env="GH_CLIENT_SECRET=YOUR_GH_CLIENT_SECRET" \
+--env="GH_CLIENT_ID=YOUR_GH_CLIENT_ID" \
+--env="REVEAL_SOCKET_SECRET=0P3N-S0URC3" \
+--env="GA_TRACKER=YOUR_GA_TRACKER"</code></pre>
+    <div class='fragment'><p>Minikube users should be able to open the new service in their browser by running:</p>
+	    <pre class='fragment'><code contenteditable>minikube service gist-reveal</code></pre></div>
+  </section>
+  <section>
+    <h3>Host your own slideshow index with Docker</h3>
+    <p class='fragment'>Start up a local development server on port 8080:</p>
+    <pre class='fragment'><code contenteditable>docker run ryanj/gist-reveal</code></pre>
+    <p class='fragment'>For production, I like to daemonize the process, configure a default gist_id, and make the container available on port 80:</p>
+    <pre class='fragment'><code contenteditable>docker run -d -p 80:8080 -e "DEFAULT_GIST=af84d40e58c5c2a908dd" ryanj/gist-reveal</code></pre>
+  </section>
+  <section>
+    <h3>GITHUB API RATE LIMITS</h3>
+    <p class='fragment'>Include your own GitHub application keys if you plan on making more than 60 requests in 2 hours:</p>
+    <pre class='fragment'><code contenteditable>docker run -e "GH_CLIENT_SECRET=11becbb840e0ff7414b19104e9e797556498fc3f" -e "GH_CLIENT_ID=639ffe9fd9dcc4f6eb4b" ryanj/gist-reveal</code></pre>
+  </section>
+  <section>
+    <h3>Built-in Analytics</h3>
+    <p class='fragment'>Include your own GA-TRACKER key:</p>
+    <pre class='fragment'><code contenteditable>docker run -e "GA_TRACKER=UA-12345678" ryanj/gist-reveal</code></pre>
+  </section>
+<!--	
+  <section id='openshift'>
+    <h3>Hosting on OpenShift</h3>
+    <p>You can launch this application on OpenShift in a single command:</p>
+    <pre class='fragment'><code contenteditable>rhc app create gistreveal nodejs-0.10 \
+--from code=http://github.com/ryanj/gist-reveal \
+DEFAULT_GIST=YOUR_DEFAULT_GIST_ID \
+GH_CLIENT_SECRET=YOUR_GH_CLIENT_SECRET \
+GH_CLIENT_ID=YOUR_GH_CLIENT_ID \
+REVEAL_SOCKET_SECRET=0P3N-S0URC3 \
+GA_TRACKER=YOUR_GA_TRACKER</code></pre>
+    <p class='fragment'>Or, <a href="https://openshift.redhat.com/app/console/application_types/custom?name=reveal&initial_git_url=https%3A%2F%2Fgithub.com/ryanj/gist-reveal.git&cartridges[]=nodejs-0.10">click here to launch on the web!</a></p>
+    <p class='fragment'>Then, use the <code>rhc env set</code> command to publish your application config and keys to the system environment.</p>
+  </section>
+  -->
+</section>
+<section data-transition='concave'>
+  <section>
+    <h2>Broadcasting Your Slide Transitions</h2><h1 class='fragment grow'>with Socket.IO</h1>
+    <pre class='fragment'><code contenteditable>docker run -e "REVEAL_SOCKET_SECRET=0P3N-S0URC3" ryanj/gist-reveal</code></pre>
+    <p>Configure your browser as a presentation device by setting the same key in your browser's localStorage</p>
+    <pre class='fragment'><code contenteditable>localStorage.secret="YOUR_SECRET_KEY"</code></pre>
+  </section>
+  <section data-transition='zoom' data-background-transition='zoom'>
+    <p>Be sure to use two different devices or brower types when testing your broadcasting relay<br/> <span class='fragment'>(FireFox vs. Chrome, desktop vs. mobile, etc.)</span></p>
+  </section>
+</section> 
+<section>
+  <h1>THE END</h1>
+  <h3>Revaljs by Hakim El Hattab / hakim.se</h3>
+  <h3><a href="http://gist-reveal.it">gist-reveal</a> by <a href="http://twitter.com/ryanj/">ryanj</a> and <a href="https://github.com/fkautz">fkautz</a></h3>
+<br/>	
+	 <p><small><a style='font-weight:bold;color:deepskyblue;' href='http://github.com/ryanj/gist-reveal'>github.com/ryanj/gist-reveal</a>
+  <br/> <a style='font-weight:bold;color:deepskyblue;' href='https://hub.docker.com/r/ryanj/gist-reveal/'>hub.docker.com/r/ryanj/gist-reveal</a></small></p>
+				</section>
 			</div>
 		</div>
 
